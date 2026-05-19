@@ -57,7 +57,8 @@ targets:
     platform: iOS
     sources:
       - path: Sources/UkrailyWidgets
-      - path: Sources/UkrailyCore
+      - path: Sources/UkrailyCore/Models/TrackedJourneySnapshot.swift
+      - path: Sources/UkrailyCore/Utilities/SharedDataStore.swift
     info:
       path: Sources/UkrailyWidgets/Info.plist
       properties:
@@ -77,7 +78,8 @@ targets:
     platform: watchOS
     sources:
       - path: Sources/UkrailyWatch
-      - path: Sources/UkrailyCore
+      - path: Sources/UkrailyCore/Models/TrackedJourneySnapshot.swift
+      - path: Sources/UkrailyCore/Utilities/SharedDataStore.swift
     info:
       path: Sources/UkrailyWatch/Info.plist
       properties:
@@ -96,7 +98,8 @@ targets:
     platform: watchOS
     sources:
       - path: Sources/UkrailyWatchWidget
-      - path: Sources/UkrailyCore
+      - path: Sources/UkrailyCore/Models/TrackedJourneySnapshot.swift
+      - path: Sources/UkrailyCore/Utilities/SharedDataStore.swift
     info:
       path: Sources/UkrailyWatchWidget/Info.plist
       properties:
