@@ -90,7 +90,8 @@ final class DarwinSOAPClient {
         request.httpMethod = "POST"
         request.httpBody = body
         request.setValue("text/xml; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        request.setValue(action, forHTTPHeaderField: "SOAPAction")
+        // ASMX services require SOAPAction to be quoted
+        request.setValue("\"\(action)\"", forHTTPHeaderField: "SOAPAction")
 
         do {
             let (data, response) = try await session.data(for: request)
@@ -98,6 +99,10 @@ final class DarwinSOAPClient {
                 throw DarwinError.invalidResponse(-1)
             }
             guard (200..<300).contains(http.statusCode) else {
+                // Log raw response body to help diagnose server errors
+                if let body = String(data: data, encoding: .utf8) {
+                    print("[Darwin] HTTP \(http.statusCode) response:\n\(body)")
+                }
                 throw DarwinError.invalidResponse(http.statusCode)
             }
             return data
