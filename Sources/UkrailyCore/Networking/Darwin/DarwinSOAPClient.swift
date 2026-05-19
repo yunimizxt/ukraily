@@ -90,8 +90,11 @@ final class DarwinSOAPClient {
         request.httpMethod = "POST"
         request.httpBody = body
         request.setValue("text/xml; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        // ASMX services require SOAPAction to be quoted
         request.setValue("\"\(action)\"", forHTTPHeaderField: "SOAPAction")
+
+        print("[Darwin] POST \(Self.endpoint)")
+        print("[Darwin] SOAPAction: \"\(action)\"")
+        print("[Darwin] Body:\n\(xml)")
 
         do {
             let (data, response) = try await session.data(for: request)

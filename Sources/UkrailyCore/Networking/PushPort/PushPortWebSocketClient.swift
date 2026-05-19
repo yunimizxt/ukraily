@@ -22,6 +22,10 @@ final class PushPortWebSocketClient {
     }
 
     func connect(username: String = "", password: String = "") {
+        guard !username.isEmpty, !password.isEmpty else {
+            print("[PushPort] Skipping connection — no Network Rail credentials provided.")
+            return
+        }
         reconnectAttempt = 0
         startConnection(username: username, password: password)
     }
