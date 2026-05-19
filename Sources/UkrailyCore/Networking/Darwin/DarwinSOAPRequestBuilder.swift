@@ -63,15 +63,12 @@ struct DarwinSOAPRequestBuilder {
         <?xml version="1.0" encoding="utf-8"?>
         <soap:Envelope
             xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-            xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
             xmlns:ldb="http://thalesgroup.com/RTTI/2021-11-01/ldb/"
             xmlns:typ="http://thalesgroup.com/RTTI/2013-11-28/Token/types">
           <soap:Header>
-            <wsse:Security>
-              <typ:AccessToken>
-                <typ:TokenValue>\(apiKey)</typ:TokenValue>
-              </typ:AccessToken>
-            </wsse:Security>
+            <typ:AccessToken>
+              <typ:TokenValue>\(apiKey)</typ:TokenValue>
+            </typ:AccessToken>
           </soap:Header>
           <soap:Body>
             \(body)
