@@ -90,7 +90,7 @@ final class DarwinSOAPClient {
         request.httpMethod = "POST"
         request.httpBody = body
         request.setValue("text/xml; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        request.setValue("\"\(action)\"", forHTTPHeaderField: "SOAPAction")
+        request.setValue("\"\"", forHTTPHeaderField: "SOAPAction")
 
         print("[Darwin] POST \(Self.endpoint)")
         print("[Darwin] SOAPAction: \"\(action)\"")
