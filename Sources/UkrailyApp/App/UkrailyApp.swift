@@ -7,6 +7,11 @@ struct UkrailyApp: App {
 
     @StateObject private var environment = AppEnvironment()
 
+    init() {
+        // Must be registered before WindowGroup body is evaluated
+        BackgroundRefreshManager.shared.registerTask()
+    }
+
     var body: some Scene {
         WindowGroup {
             HomeView()
@@ -16,9 +21,8 @@ struct UkrailyApp: App {
                 }
                 .task {
                     await AppNotificationDelegate.shared.requestAuthorisation()
-                    // Push Port credentials come from the same xcconfig as the SOAP key.
-                    // For now connect unauthenticated — the feed is open for registered users.
                     PushPortWebSocketClient.shared.connect()
+                    BackgroundRefreshManager.shared.scheduleNext()
                 }
         }
         .modelContainer(PersistenceController.shared.container)
