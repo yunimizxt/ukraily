@@ -1,5 +1,4 @@
 import SwiftUI
-import UkrailyCore
 
 struct GlanceView: View {
 

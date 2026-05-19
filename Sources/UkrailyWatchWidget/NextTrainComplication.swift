@@ -1,6 +1,5 @@
 import WidgetKit
 import SwiftUI
-import UkrailyCore
 
 // MARK: - Timeline provider
 

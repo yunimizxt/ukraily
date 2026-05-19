@@ -1,6 +1,5 @@
 import SwiftUI
 import WidgetKit
-import UkrailyCore
 
 struct NextTrainWidgetView: View {
 

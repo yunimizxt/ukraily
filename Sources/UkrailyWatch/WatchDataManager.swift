@@ -1,6 +1,5 @@
 import Foundation
 import Combine
-import UkrailyCore
 
 /// Drives the Watch UI. Reads from SharedDataStore (App Group UserDefaults)
 /// and refreshes on a 60-second timer — no WCSession required.

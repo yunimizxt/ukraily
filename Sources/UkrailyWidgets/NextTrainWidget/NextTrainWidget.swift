@@ -1,6 +1,5 @@
 import WidgetKit
 import SwiftUI
-import UkrailyCore
 
 struct NextTrainTimelineProvider: TimelineProvider {
 

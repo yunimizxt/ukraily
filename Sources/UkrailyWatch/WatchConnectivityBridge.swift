@@ -1,6 +1,5 @@
 import Foundation
 import WatchConnectivity
-import UkrailyCore
 
 /// WCSession bridge — kept for future use but Watch UI no longer depends on it.
 /// The Watch reads journey data from SharedDataStore (App Group UserDefaults) instead.

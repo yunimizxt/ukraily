@@ -1,5 +1,4 @@
 import WidgetKit
-import UkrailyCore
 
 struct NextTrainEntry: TimelineEntry {
     let date: Date
