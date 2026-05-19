@@ -1,6 +1,9 @@
 // Debug build configuration
-// DarwinAPIKey.xcconfig is gitignored — copy DarwinAPIKey.xcconfig.example and fill in your key
+// DarwinAPIKey.xcconfig is gitignored — copy DarwinAPIKey.xcconfig.example and fill in your keys
 #include? "DarwinAPIKey.xcconfig"
+
+RTT_USERNAME =
+RTT_PASSWORD =
 
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG
 DEBUG_INFORMATION_FORMAT = dwarf

@@ -5,13 +5,11 @@ final class LiveTrainRepository {
 
     static let shared = LiveTrainRepository()
 
-    private let soapClient: DarwinSOAPClient
+    private let rtt: RTTAPIClient
     private let pushPort: PushPortWebSocketClient
     private let stationLookup: CRSCodeLookup
 
     private var cancellables = Set<AnyCancellable>()
-
-    // In-memory cache keyed by serviceID
     private var serviceCache: [String: TrainService] = [:]
 
     var liveUpdates: AnyPublisher<TrainStatusUpdate, Never> {
@@ -19,11 +17,11 @@ final class LiveTrainRepository {
     }
 
     init(
-        soapClient: DarwinSOAPClient = .shared,
+        rtt: RTTAPIClient = .shared,
         pushPort: PushPortWebSocketClient = .shared,
         stationLookup: CRSCodeLookup = .shared
     ) {
-        self.soapClient = soapClient
+        self.rtt = rtt
         self.pushPort = pushPort
         self.stationLookup = stationLookup
     }
@@ -31,16 +29,21 @@ final class LiveTrainRepository {
     // MARK: - Public API
 
     func fetchDepartureBoard(crs: String, count: Int = 10) async throws -> [TrainService] {
-        let response = try await soapClient.fetchDepartureBoard(crs: crs, count: count)
-        let station = stationLookup.station(forCRS: crs) ?? Station(crsCode: crs, name: response.locationName)
-        return response.services.compactMap { summary in
-            mapToTrainService(summary: summary, boardStation: station)
-        }
+        let response = try await rtt.fetchDepartures(crs: crs)
+        let boardStation = stationLookup.station(forCRS: crs)
+            ?? Station(crsCode: crs, name: response.location.name)
+        return (response.services ?? [])
+            .filter { $0.isPassenger == true }
+            .prefix(count)
+            .compactMap { mapService($0, boardStation: boardStation) }
     }
 
     func fetchServiceDetails(serviceID: String, boardStation: Station) async throws -> TrainService {
-        let response = try await soapClient.fetchServiceDetails(serviceID: serviceID)
-        let service = mapDetailsToTrainService(response: response, serviceID: serviceID, boardStation: boardStation)
+        // serviceID is "uid/runDate" e.g. "W12345/2024-01-15"
+        let parts = serviceID.split(separator: "/", maxSplits: 1).map(String.init)
+        guard parts.count == 2 else { throw RTTError.invalidResponse(-1) }
+        let response = try await rtt.fetchServiceDetails(serviceUid: parts[0], runDate: parts[1])
+        let service = mapServiceDetails(response, serviceID: serviceID, boardStation: boardStation)
         serviceCache[serviceID] = service
         return service
     }
@@ -51,66 +54,87 @@ final class LiveTrainRepository {
 
     // MARK: - Mapping
 
-    private func mapToTrainService(
-        summary: GetDepartureBoardResponse.ServiceSummary,
-        boardStation: Station
-    ) -> TrainService? {
-        let destination = stationLookup.station(forCRS: summary.destinationCRS ?? "") ??
-            Station(crsCode: summary.destinationCRS ?? "???", name: summary.destinationName)
+    private func mapService(_ s: RTTService, boardStation: Station) -> TrainService? {
+        let detail = s.locationDetail
+        guard let scheduledStr = detail.gbttBookedDeparture,
+              let scheduled = parseTime(scheduledStr, on: s.runDate) else { return nil }
 
-        let scheduledDep = UkrailyDateFormatter.parseTime(summary.scheduledDeparture) ?? .now
-        let estimatedDep: Date?
-        if let etStr = summary.estimatedDeparture, etStr != "On time", etStr != "Delayed", etStr != "Cancelled" {
-            estimatedDep = UkrailyDateFormatter.parseTime(etStr)
-        } else if summary.estimatedDeparture == "On time" {
-            estimatedDep = scheduledDep
-        } else {
-            estimatedDep = nil
-        }
+        let estimated = parseTime(detail.realtimeDeparture, on: s.runDate)
+        let isCancelled = detail.displayAs == "CANCELLED_CALL"
+        let dest = s.destination?.first
+        let destStation = stationLookup.station(forCRS: dest?.tiploc ?? "")
+            ?? Station(crsCode: "", name: dest?.description ?? "Unknown")
 
         return TrainService(
-            serviceID: summary.serviceID,
-            operatorName: summary.operatorName,
-            scheduledDeparture: scheduledDep,
-            estimatedDeparture: estimatedDep,
-            platform: summary.platform,
-            isCancelled: summary.isCancelled,
+            serviceID: "\(s.serviceUid)/\(s.runDate)",
+            operatorName: s.atocName ?? s.atocCode ?? "",
+            scheduledDeparture: scheduled,
+            estimatedDeparture: isCancelled ? nil : estimated,
+            platform: detail.platform,
+            isCancelled: isCancelled,
             origin: boardStation,
-            destination: destination
+            destination: destStation
         )
     }
 
-    private func mapDetailsToTrainService(
-        response: GetServiceDetailsResponse,
+    private func mapServiceDetails(
+        _ r: RTTServiceResponse,
         serviceID: String,
         boardStation: Station
     ) -> TrainService {
-        let callingPoints = response.callingPoints.map { cp -> CallingPoint in
-            let station = stationLookup.station(forCRS: cp.crs ?? "") ??
-                Station(crsCode: cp.crs ?? "???", name: cp.stationName)
-            return CallingPoint(
-                station: station,
-                scheduledTime: UkrailyDateFormatter.parseTime(cp.scheduledTime) ?? .now,
-                estimatedTime: cp.estimatedTime.flatMap { UkrailyDateFormatter.parseTime($0) },
-                actualTime: cp.actualTime.flatMap { UkrailyDateFormatter.parseTime($0) },
-                platform: cp.platform,
-                isCancelled: cp.isCancelled
-            )
-        }
+        let callingPoints: [CallingPoint] = (r.locations ?? [])
+            .filter { $0.isPublicCall == true || $0.isCall == true }
+            .compactMap { loc in
+                guard let name = loc.description else { return nil }
+                let station = stationLookup.station(forCRS: loc.crs ?? "")
+                    ?? Station(crsCode: loc.crs ?? "", name: name)
+                guard let schTime = parseTime(loc.gbttBookedDeparture ?? loc.gbttBookedArrival, on: r.runDate)
+                else { return nil }
+                let estTime = parseTime(loc.realtimeDeparture ?? loc.realtimeArrival, on: r.runDate)
+                let isCancelled = loc.cancelReasonCode != nil
+                return CallingPoint(
+                    station: station,
+                    scheduledTime: schTime,
+                    estimatedTime: estTime,
+                    actualTime: loc.realtimeDepartureActual == true ? estTime : nil,
+                    platform: loc.platform,
+                    isCancelled: isCancelled
+                )
+            }
 
         let origin = callingPoints.first?.station ?? boardStation
         let destination = callingPoints.last?.station ?? boardStation
+        let firstLoc = r.locations?.first(where: { $0.isPublicCall == true || $0.isCall == true })
+        let isCancelled = r.locations?.allSatisfy { $0.cancelReasonCode != nil } ?? false
 
         return TrainService(
             serviceID: serviceID,
-            operatorName: response.operatorName,
+            operatorName: r.atocName ?? r.atocCode ?? "",
             scheduledDeparture: callingPoints.first?.scheduledTime ?? .now,
             estimatedDeparture: callingPoints.first?.estimatedTime,
-            platform: response.platform,
-            isCancelled: response.isCancelled,
+            platform: firstLoc?.platform,
+            isCancelled: isCancelled,
             origin: origin,
             destination: destination,
             callingPoints: callingPoints
         )
+    }
+
+    // MARK: - Time parsing
+
+    private func parseTime(_ hhmm: String?, on dateStr: String) -> Date? {
+        guard let hhmm = hhmm, hhmm.count >= 4 else { return nil }
+        let h = hhmm.prefix(2)
+        let m = hhmm.dropFirst(2).prefix(2)
+        guard let hour = Int(h), let minute = Int(m) else { return nil }
+
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy-MM-dd"
+        fmt.timeZone = TimeZone(identifier: "Europe/London")
+        guard let base = fmt.date(from: dateStr) else { return nil }
+
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "Europe/London")!
+        return cal.date(bySettingHour: hour, minute: minute, second: 0, of: base)
     }
 }
