@@ -90,3 +90,24 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ukraily.watch
+
+  UkrailyWatchWidget:
+    type: app-extension
+    platform: watchOS
+    sources:
+      - path: Sources/UkrailyWatchWidget
+      - path: Sources/UkrailyCore
+    info:
+      path: Sources/UkrailyWatchWidget/Info.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+        WKExtensionDelegateClassName: ""
+    entitlements:
+      path: Sources/UkrailyWatchWidget/UkrailyWatchWidget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.ukraily
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ukraily.watch.widget

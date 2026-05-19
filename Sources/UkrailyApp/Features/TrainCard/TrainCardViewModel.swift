@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import SwiftData
+import WidgetKit
 import UkrailyCore
 
 @MainActor
@@ -77,6 +78,7 @@ final class TrainCardViewModel: ObservableObject {
             journeyRepo.track(service: service, context: context)
             isTracked = true
         }
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     // MARK: - Private

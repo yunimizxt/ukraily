@@ -39,6 +39,11 @@ let package = Package(
             dependencies: ["UkrailyCore"],
             path: "Sources/UkrailyWatch"
         ),
+        .target(
+            name: "UkrailyWatchWidget",
+            dependencies: ["UkrailyCore"],
+            path: "Sources/UkrailyWatchWidget"
+        ),
         .testTarget(
             name: "UkrailyCoreTests",
             dependencies: ["UkrailyCore"],

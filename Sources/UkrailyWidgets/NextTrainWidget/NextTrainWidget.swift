@@ -1,6 +1,5 @@
 import WidgetKit
 import SwiftUI
-import SwiftData
 import UkrailyCore
 
 struct NextTrainTimelineProvider: TimelineProvider {
@@ -12,67 +11,33 @@ struct NextTrainTimelineProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (NextTrainEntry) -> Void) {
-        completion(buildEntry(from: nextTrackedJourney()))
+        completion(buildEntry(from: SharedDataStore.nextJourney()))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<NextTrainEntry>) -> Void) {
-        let journey = nextTrackedJourney()
+        let journey = SharedDataStore.nextJourney()
         var entries: [NextTrainEntry] = []
 
         let now = Date.now
         entries.append(buildEntry(from: journey, at: now))
 
         if let j = journey {
-            // Refresh at T-10 min, departure, and arrival
+            // Refresh at T-10 min, departure, and approx arrival
             let tMinus10 = j.scheduledDeparture.addingTimeInterval(-10 * 60)
             let departure = j.scheduledDeparture
-            let arrival   = j.scheduledDeparture.addingTimeInterval(90 * 60) // approx
+            let arrival   = j.scheduledDeparture.addingTimeInterval(90 * 60)
 
             for date in [tMinus10, departure, arrival] where date > now {
                 entries.append(buildEntry(from: journey, at: date))
             }
 
-            let policy = TimelineReloadPolicy.after(arrival)
-            completion(Timeline(entries: entries, policy: policy))
+            completion(Timeline(entries: entries, policy: .after(arrival)))
         } else {
-            // No journey — reload in 15 min
             completion(Timeline(entries: entries, policy: .after(now.addingTimeInterval(15 * 60))))
         }
     }
 
     // MARK: - Private
-
-    private func nextTrackedJourney() -> TrackedJourneySnapshot? {
-        // Read from the shared App Group SwiftData store
-        guard let container = try? ModelContainer(
-            for: TrackedJourney.self,
-            configurations: ModelConfiguration(
-                url: FileManager.default
-                    .containerURL(forSecurityApplicationGroupIdentifier: "group.com.ukraily")?
-                    .appendingPathComponent("Ukraily.store") ?? URL.documentsDirectory
-            )
-        ) else { return nil }
-
-        let context = ModelContext(container)
-        let now = Date.now
-        let descriptor = FetchDescriptor<TrackedJourney>(
-            predicate: #Predicate { $0.isActive && $0.scheduledDeparture > now },
-            sortBy: [SortDescriptor(\.scheduledDeparture)]
-        )
-        guard let journeys = try? context.fetch(descriptor),
-              let next = journeys.first else { return nil }
-
-        return TrackedJourneySnapshot(
-            id: next.id,
-            serviceID: next.serviceID,
-            originName: next.originName,
-            destinationName: next.destinationName,
-            scheduledDeparture: next.scheduledDeparture,
-            platform: next.lastKnownPlatform,
-            delayMinutes: next.lastKnownDelayMinutes,
-            isCancelled: next.lastStatusRaw == 2
-        )
-    }
 
     private func buildEntry(from journey: TrackedJourneySnapshot?, at date: Date = .now) -> NextTrainEntry {
         guard let j = journey else { return .empty }

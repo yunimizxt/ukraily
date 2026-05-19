@@ -1,6 +1,7 @@
 import Foundation
 import BackgroundTasks
 import SwiftData
+import WidgetKit
 import UkrailyCore
 
 final class BackgroundRefreshManager {
@@ -83,6 +84,11 @@ final class BackgroundRefreshManager {
         }
 
         try? context.save()
+
+        // Push updated snapshots to App Group so widgets and Watch can read them
+        let snapshots = journeys.map { TrackedJourneySnapshot.from($0) }
+        SharedDataStore.save(journeys: snapshots)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     private func refresh(journey: TrackedJourney, context: ModelContext) async {
