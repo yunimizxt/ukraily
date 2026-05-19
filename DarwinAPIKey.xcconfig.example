@@ -1,0 +1,3 @@
+// Copy this file to DarwinAPIKey.xcconfig (gitignored) and insert your key.
+// Register at: https://realtime.nationalrail.co.uk/OpenLDBWSRegistration/
+DARWIN_API_KEY = YOUR_KEY_HERE

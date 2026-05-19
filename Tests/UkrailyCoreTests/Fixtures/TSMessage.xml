@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Pport xmlns="http://www.thalesgroup.com/rtti/PushPort/v16" xmlns:ns5="http://www.thalesgroup.com/rtti/PushPort/Forecasts/v3" ts="2026-05-19T14:00:00.000Z">
+  <uR updateOrigin="Darwin">
+    <TS rid="202605191234567" uid="G12345" ssd="2026-05-19">
+      <ns5:Location tpl="PADTON" wtd="14:32">
+        <ns5:dep et="14:37" />
+        <ns5:plat plat="3" />
+      </ns5:Location>
+      <ns5:Location tpl="RDNGSTN" wta="14:55" wtd="14:56">
+        <ns5:arr et="15:00" />
+        <ns5:dep et="15:01" />
+      </ns5:Location>
+      <ns5:Location tpl="BRSTLTM" wta="15:28">
+        <ns5:arr et="15:33" />
+      </ns5:Location>
+    </TS>
+  </uR>
+</Pport>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <GetDepartureBoardResponse xmlns="http://thalesgroup.com/RTTI/2021-11-01/ldb/">
+      <GetStationBoardResult xmlns:lt8="http://thalesgroup.com/RTTI/2021-11-01/ldb/types"
+                             xmlns:lt7="http://thalesgroup.com/RTTI/2017-10-01/ldb/types">
+        <lt8:generatedAt>2026-05-19T14:00:00.000Z</lt8:generatedAt>
+        <lt8:locationName>London Paddington</lt8:locationName>
+        <lt8:crs>PAD</lt8:crs>
+        <lt8:trainServices>
+          <lt8:service serviceID="SVC001" serviceType="train">
+            <lt8:std>14:32</lt8:std>
+            <lt8:etd>On time</lt8:etd>
+            <lt8:platform>3</lt8:platform>
+            <lt8:operator>GWR</lt8:operator>
+            <lt8:destination>
+              <lt8:locationName>Bristol Temple Meads</lt8:locationName>
+              <lt8:crs>BRI</lt8:crs>
+            </lt8:destination>
+          </lt8:service>
+          <lt8:service serviceID="SVC002" serviceType="train">
+            <lt8:std>14:47</lt8:std>
+            <lt8:etd>14:52</lt8:etd>
+            <lt8:operator>GWR</lt8:operator>
+            <lt8:destination>
+              <lt8:locationName>Oxford</lt8:locationName>
+              <lt8:crs>OXF</lt8:crs>
+            </lt8:destination>
+          </lt8:service>
+        </lt8:trainServices>
+      </GetStationBoardResult>
+    </GetDepartureBoardResponse>
+  </soap:Body>
+</soap:Envelope>

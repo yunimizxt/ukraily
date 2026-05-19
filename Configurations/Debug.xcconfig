@@ -1,0 +1,7 @@
+// Debug build configuration
+// DarwinAPIKey.xcconfig is gitignored — copy DarwinAPIKey.xcconfig.example and fill in your key
+#include? "DarwinAPIKey.xcconfig"
+
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG
+DEBUG_INFORMATION_FORMAT = dwarf
+ONLY_ACTIVE_ARCH = YES
