@@ -2,7 +2,7 @@ import Foundation
 import UserNotifications
 
 // Protocol abstraction for testability
-public protocol NotificationCentreProtocol: Sendable {
+protocol NotificationCentreProtocol {
     func add(_ request: UNNotificationRequest) async throws
     func removePendingNotificationRequests(withIdentifiers: [String])
     func pendingNotificationRequests() async -> [UNNotificationRequest]
@@ -12,13 +12,13 @@ extension UNUserNotificationCenter: NotificationCentreProtocol {}
 
 // MARK: - Scheduler
 
-public final class NotificationScheduler: Sendable {
+final class NotificationScheduler: @unchecked Sendable {
 
-    public static let shared = NotificationScheduler()
+    static let shared = NotificationScheduler()
 
     private let centre: any NotificationCentreProtocol
 
-    public init(centre: any NotificationCentreProtocol = UNUserNotificationCenter.current()) {
+    init(centre: any NotificationCentreProtocol = UNUserNotificationCenter.current()) {
         self.centre = centre
     }
 
@@ -26,7 +26,7 @@ public final class NotificationScheduler: Sendable {
 
     /// Schedules T-30 and T-10 calendar triggers for a tracked journey.
     /// Safe to call multiple times — existing requests are replaced.
-    public func schedulePreDepartureReminders(for journey: TrackedJourney) async {
+    func schedulePreDepartureReminders(for journey: TrackedJourney) async {
         guard UserDefaults.standard.bool(forKey: "notif.preDeparture") else { return }
         for minutes in [30, 10] {
             let fireDate = journey.scheduledDeparture.addingTimeInterval(-Double(minutes) * 60)
@@ -51,7 +51,7 @@ public final class NotificationScheduler: Sendable {
 
     // MARK: - Platform change (immediate)
 
-    public func schedulePlatformChange(
+    func schedulePlatformChange(
         journey: TrackedJourney,
         newPlatform: String,
         oldPlatform: String?
@@ -74,7 +74,7 @@ public final class NotificationScheduler: Sendable {
 
     /// Fires when the delay first crosses the 5 / 15 / 30 minute thresholds.
     /// Uses `journey.lastNotifiedDelayThreshold` to avoid duplicate alerts.
-    public func scheduleDelayIfNeeded(
+    func scheduleDelayIfNeeded(
         journey: TrackedJourney,
         delayMinutes: Int
     ) async {
@@ -94,7 +94,7 @@ public final class NotificationScheduler: Sendable {
 
     // MARK: - Cancellation (immediate)
 
-    public func scheduleCancellation(journey: TrackedJourney) async {
+    func scheduleCancellation(journey: TrackedJourney) async {
         guard UserDefaults.standard.bool(forKey: "notif.cancellations") else { return }
         let payload = NotificationPayload.cancellation(journey: journey)
         let request = UNNotificationRequest(
@@ -108,7 +108,7 @@ public final class NotificationScheduler: Sendable {
     // MARK: - Cancel
 
     /// Removes all pending notifications for a journey.
-    public func cancelAllNotifications(for journeyID: UUID) {
+    func cancelAllNotifications(for journeyID: UUID) {
         let prefix = "ukraily.journey.\(journeyID.uuidString)."
         Task {
             let pending = await centre.pendingNotificationRequests()

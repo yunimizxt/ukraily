@@ -1,18 +1,18 @@
 import Foundation
 
-public final class StationRepository {
+final class StationRepository {
 
-    public static let shared = StationRepository()
+    static let shared = StationRepository()
 
     private let lookup = CRSCodeLookup.shared
 
-    public init() {}
+    init() {}
 
-    public func search(_ query: String, limit: Int = 10) -> [Station] {
+    func search(_ query: String, limit: Int = 10) -> [Station] {
         lookup.search(query, limit: limit)
     }
 
-    public func station(forCRS crs: String) -> Station? {
+    func station(forCRS crs: String) -> Station? {
         lookup.station(forCRS: crs)
     }
 }

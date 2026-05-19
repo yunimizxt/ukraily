@@ -1,22 +1,22 @@
 import Foundation
 
-public enum UkrailyDateFormatter {
+enum UkrailyDateFormatter {
 
-    public static let hmm: DateFormatter = {
+    static let hmm: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "HH:mm"
         f.locale = Locale(identifier: "en_GB")
         return f
     }()
 
-    public static let iso8601: ISO8601DateFormatter = {
+    static let iso8601: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return f
     }()
 
     /// Parses a Darwin time string like "14:32" relative to a reference date.
-    public static func parseTime(_ timeStr: String, on referenceDate: Date = .now) -> Date? {
+    static func parseTime(_ timeStr: String, on referenceDate: Date = .now) -> Date? {
         let calendar = Calendar.current
         let components = timeStr.split(separator: ":").compactMap { Int($0) }
         guard components.count == 2 else { return nil }

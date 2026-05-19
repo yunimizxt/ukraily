@@ -1,16 +1,16 @@
 import Foundation
 import Network
 
-public final class NetworkMonitor: ObservableObject, @unchecked Sendable {
+final class NetworkMonitor: ObservableObject, @unchecked Sendable {
 
-    public static let shared = NetworkMonitor()
+    static let shared = NetworkMonitor()
 
-    @Published public private(set) var isConnected = true
+    @Published private(set) var isConnected = true
 
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: "com.ukraily.network")
 
-    public init() {
+    init() {
         monitor.pathUpdateHandler = { [weak self] path in
             DispatchQueue.main.async {
                 self?.isConnected = path.status == .satisfied

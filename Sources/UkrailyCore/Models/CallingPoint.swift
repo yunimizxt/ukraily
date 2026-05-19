@@ -1,15 +1,15 @@
 import Foundation
 
-public struct CallingPoint: Identifiable, Sendable {
-    public let id: UUID
-    public let station: Station
-    public let scheduledTime: Date
-    public let estimatedTime: Date?
-    public let actualTime: Date?
-    public let platform: String?
-    public let isCancelled: Bool
+struct CallingPoint: Identifiable, Sendable {
+    let id: UUID
+    let station: Station
+    let scheduledTime: Date
+    let estimatedTime: Date?
+    let actualTime: Date?
+    let platform: String?
+    let isCancelled: Bool
 
-    public init(
+    init(
         id: UUID = UUID(),
         station: Station,
         scheduledTime: Date,
@@ -27,11 +27,11 @@ public struct CallingPoint: Identifiable, Sendable {
         self.isCancelled = isCancelled
     }
 
-    public var effectiveTime: Date {
+    var effectiveTime: Date {
         actualTime ?? estimatedTime ?? scheduledTime
     }
 
-    public var delayMinutes: Int {
+    var delayMinutes: Int {
         let reference = actualTime ?? estimatedTime ?? scheduledTime
         return max(0, Int(reference.timeIntervalSince(scheduledTime) / 60))
     }

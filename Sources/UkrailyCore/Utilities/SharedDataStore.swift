@@ -2,7 +2,7 @@ import Foundation
 
 /// Persists active journey snapshots in the App Group UserDefaults container
 /// so the Widget extension and Watch app can read without SwiftData access.
-public enum SharedDataStore {
+enum SharedDataStore {
 
     private static let suiteName  = "group.com.ukraily"
     private static let journeyKey = "activeJourneys"
@@ -10,7 +10,7 @@ public enum SharedDataStore {
 
     // MARK: - Write (iOS app only)
 
-    public static func save(journeys: [TrackedJourneySnapshot]) {
+    static func save(journeys: [TrackedJourneySnapshot]) {
         guard let defaults = UserDefaults(suiteName: suiteName) else { return }
         if let data = try? JSONEncoder().encode(journeys) {
             defaults.set(data, forKey: journeyKey)
@@ -20,7 +20,7 @@ public enum SharedDataStore {
 
     // MARK: - Read (Widget + Watch)
 
-    public static func loadJourneys() -> [TrackedJourneySnapshot] {
+    static func loadJourneys() -> [TrackedJourneySnapshot] {
         guard let defaults = UserDefaults(suiteName: suiteName),
               let data = defaults.data(forKey: journeyKey),
               let journeys = try? JSONDecoder().decode([TrackedJourneySnapshot].self, from: data)
@@ -32,11 +32,11 @@ public enum SharedDataStore {
             .sorted { $0.scheduledDeparture < $1.scheduledDeparture }
     }
 
-    public static func nextJourney() -> TrackedJourneySnapshot? {
+    static func nextJourney() -> TrackedJourneySnapshot? {
         loadJourneys().first { $0.scheduledDeparture > .now }
     }
 
-    public static var lastUpdated: Date? {
+    static var lastUpdated: Date? {
         guard let defaults = UserDefaults(suiteName: suiteName) else { return nil }
         let t = defaults.double(forKey: updatedKey)
         return t > 0 ? Date(timeIntervalSince1970: t) : nil

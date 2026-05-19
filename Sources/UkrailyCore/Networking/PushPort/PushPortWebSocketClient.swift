@@ -1,9 +1,9 @@
 import Foundation
 import Combine
 
-public final class PushPortWebSocketClient {
+final class PushPortWebSocketClient {
 
-    public static let shared = PushPortWebSocketClient()
+    static let shared = PushPortWebSocketClient()
 
     private static let endpoint = URL(string: "wss://datafeeds.networkrail.co.uk/topic/darwin.pushport-v16")!
     private static let destination = "/topic/darwin.pushport-v16"
@@ -17,16 +17,16 @@ public final class PushPortWebSocketClient {
     private let feedHandler = PushPortFeedHandler()
     private let frameParser = STOMPFrameParser()
 
-    public var updates: AnyPublisher<TrainStatusUpdate, Never> {
+    var updates: AnyPublisher<TrainStatusUpdate, Never> {
         feedHandler.updates.eraseToAnyPublisher()
     }
 
-    public func connect(username: String = "", password: String = "") {
+    func connect(username: String = "", password: String = "") {
         reconnectAttempt = 0
         startConnection(username: username, password: password)
     }
 
-    public func disconnect() {
+    func disconnect() {
         receiveTask?.cancel()
         heartbeatTask?.cancel()
         sendFrame(STOMPFrame.disconnect())

@@ -1,12 +1,12 @@
 import Foundation
 import SwiftData
 
-public final class PersistenceController {
-    public static let shared = PersistenceController()
+final class PersistenceController {
+    static let shared = PersistenceController()
 
-    public let container: ModelContainer
+    let container: ModelContainer
 
-    public init(inMemory: Bool = false) {
+    init(inMemory: Bool = false) {
         let schema = Schema([TrackedJourney.self, SavedStation.self])
         let storeURL: URL
         if inMemory {

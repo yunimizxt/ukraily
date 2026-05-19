@@ -1,15 +1,15 @@
 import Foundation
 import SwiftData
 
-public final class JourneyRepository {
+final class JourneyRepository {
 
-    public static let shared = JourneyRepository()
+    static let shared = JourneyRepository()
 
     private let liveTrains: LiveTrainRepository
     private let stationLookup: CRSCodeLookup
     private let notificationScheduler: NotificationScheduler
 
-    public init(
+    init(
         liveTrains: LiveTrainRepository = .shared,
         stationLookup: CRSCodeLookup = .shared,
         notificationScheduler: NotificationScheduler = .shared
@@ -21,7 +21,7 @@ public final class JourneyRepository {
 
     // MARK: - Journey search
 
-    public func searchJourneys(
+    func searchJourneys(
         from originCRS: String,
         to destinationCRS: String,
         on date: Date = .now
@@ -35,7 +35,7 @@ public final class JourneyRepository {
 
     // MARK: - Tracked journeys
 
-    public func track(service: TrainService, context: ModelContext) {
+    func track(service: TrainService, context: ModelContext) {
         let journey = TrackedJourney(
             serviceID: service.serviceID,
             originCRS: service.origin.crsCode,
@@ -52,12 +52,12 @@ public final class JourneyRepository {
         }
     }
 
-    public func untrack(journey: TrackedJourney, context: ModelContext) {
+    func untrack(journey: TrackedJourney, context: ModelContext) {
         notificationScheduler.cancelAllNotifications(for: journey.id)
         context.delete(journey)
     }
 
-    public func refresh(journey: TrackedJourney, context: ModelContext) async throws -> TrainService {
+    func refresh(journey: TrackedJourney, context: ModelContext) async throws -> TrainService {
         let station = stationLookup.station(forCRS: journey.originCRS) ?? journey.origin
         let service = try await liveTrains.fetchServiceDetails(serviceID: journey.serviceID, boardStation: station)
 

@@ -1,16 +1,16 @@
 import Foundation
 
 // Preview and test fixtures — not compiled into release builds
-public enum MockData {
+enum MockData {
 
-    public static let now = Date()
+    static let now = Date()
 
-    public static let paddington = Station.londonPaddington
-    public static let bristol    = Station.bristol
-    public static let reading    = Station(crsCode: "RDG", name: "Reading", lat: 51.4591, lon: -0.9724)
-    public static let swindon    = Station(crsCode: "SWI", name: "Swindon", lat: 51.5646, lon: -1.7846)
+    static let paddington = Station.londonPaddington
+    static let bristol    = Station.bristol
+    static let reading    = Station(crsCode: "RDG", name: "Reading", lat: 51.4591, lon: -0.9724)
+    static let swindon    = Station(crsCode: "SWI", name: "Swindon", lat: 51.5646, lon: -1.7846)
 
-    public static var onTimeService: TrainService {
+    static var onTimeService: TrainService {
         TrainService(
             serviceID: "MOCK001",
             operatorName: "GWR",
@@ -24,7 +24,7 @@ public enum MockData {
         )
     }
 
-    public static var delayedService: TrainService {
+    static var delayedService: TrainService {
         TrainService(
             serviceID: "MOCK002",
             operatorName: "GWR",
@@ -38,7 +38,7 @@ public enum MockData {
         )
     }
 
-    public static var cancelledService: TrainService {
+    static var cancelledService: TrainService {
         TrainService(
             serviceID: "MOCK003",
             operatorName: "GWR",
@@ -52,7 +52,7 @@ public enum MockData {
         )
     }
 
-    public static var departedService: TrainService {
+    static var departedService: TrainService {
         TrainService(
             serviceID: "MOCK004",
             operatorName: "GWR",

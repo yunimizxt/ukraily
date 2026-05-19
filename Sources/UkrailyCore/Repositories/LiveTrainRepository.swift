@@ -1,9 +1,9 @@
 import Foundation
 import Combine
 
-public final class LiveTrainRepository {
+final class LiveTrainRepository {
 
-    public static let shared = LiveTrainRepository()
+    static let shared = LiveTrainRepository()
 
     private let soapClient: DarwinSOAPClient
     private let pushPort: PushPortWebSocketClient
@@ -14,11 +14,11 @@ public final class LiveTrainRepository {
     // In-memory cache keyed by serviceID
     private var serviceCache: [String: TrainService] = [:]
 
-    public var liveUpdates: AnyPublisher<TrainStatusUpdate, Never> {
+    var liveUpdates: AnyPublisher<TrainStatusUpdate, Never> {
         pushPort.updates
     }
 
-    public init(
+    init(
         soapClient: DarwinSOAPClient = .shared,
         pushPort: PushPortWebSocketClient = .shared,
         stationLookup: CRSCodeLookup = .shared
@@ -30,7 +30,7 @@ public final class LiveTrainRepository {
 
     // MARK: - Public API
 
-    public func fetchDepartureBoard(crs: String, count: Int = 10) async throws -> [TrainService] {
+    func fetchDepartureBoard(crs: String, count: Int = 10) async throws -> [TrainService] {
         let response = try await soapClient.fetchDepartureBoard(crs: crs, count: count)
         let station = stationLookup.station(forCRS: crs) ?? Station(crsCode: crs, name: response.locationName)
         return response.services.compactMap { summary in
@@ -38,14 +38,14 @@ public final class LiveTrainRepository {
         }
     }
 
-    public func fetchServiceDetails(serviceID: String, boardStation: Station) async throws -> TrainService {
+    func fetchServiceDetails(serviceID: String, boardStation: Station) async throws -> TrainService {
         let response = try await soapClient.fetchServiceDetails(serviceID: serviceID)
         let service = mapDetailsToTrainService(response: response, serviceID: serviceID, boardStation: boardStation)
         serviceCache[serviceID] = service
         return service
     }
 
-    public func cachedService(id: String) -> TrainService? {
+    func cachedService(id: String) -> TrainService? {
         serviceCache[id]
     }
 
@@ -91,8 +91,8 @@ public final class LiveTrainRepository {
             return CallingPoint(
                 station: station,
                 scheduledTime: UkrailyDateFormatter.parseTime(cp.scheduledTime) ?? .now,
-                estimatedTime: cp.estimatedTime.flatMap(UkrailyDateFormatter.parseTime),
-                actualTime: cp.actualTime.flatMap(UkrailyDateFormatter.parseTime),
+                estimatedTime: cp.estimatedTime.flatMap { UkrailyDateFormatter.parseTime($0) },
+                actualTime: cp.actualTime.flatMap { UkrailyDateFormatter.parseTime($0) },
                 platform: cp.platform,
                 isCancelled: cp.isCancelled
             )

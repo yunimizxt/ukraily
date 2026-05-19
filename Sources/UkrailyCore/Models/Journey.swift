@@ -1,13 +1,13 @@
 import Foundation
 
-public struct Journey: Identifiable, Sendable {
-    public let id: UUID
-    public let origin: Station
-    public let destination: Station
-    public let date: Date
-    public var resolvedService: TrainService?
+struct Journey: Identifiable, Sendable {
+    let id: UUID
+    let origin: Station
+    let destination: Station
+    let date: Date
+    var resolvedService: TrainService?
 
-    public init(
+    init(
         id: UUID = UUID(),
         origin: Station,
         destination: Station,

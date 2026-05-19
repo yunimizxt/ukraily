@@ -1,19 +1,19 @@
 import Foundation
 
-public struct TrainService: Identifiable, Sendable {
-    public let serviceID: String
-    public let operatorName: String
-    public let scheduledDeparture: Date
-    public let estimatedDeparture: Date?
-    public let platform: String?
-    public let isCancelled: Bool
-    public let origin: Station
-    public let destination: Station
-    public let callingPoints: [CallingPoint]
+struct TrainService: Identifiable, Sendable {
+    let serviceID: String
+    let operatorName: String
+    let scheduledDeparture: Date
+    let estimatedDeparture: Date?
+    let platform: String?
+    let isCancelled: Bool
+    let origin: Station
+    let destination: Station
+    let callingPoints: [CallingPoint]
 
-    public var id: String { serviceID }
+    var id: String { serviceID }
 
-    public init(
+    init(
         serviceID: String,
         operatorName: String,
         scheduledDeparture: Date,
@@ -35,7 +35,7 @@ public struct TrainService: Identifiable, Sendable {
         self.callingPoints = callingPoints
     }
 
-    public var status: TrainStatus {
+    var status: TrainStatus {
         if isCancelled { return .cancelled }
         guard let estimated = estimatedDeparture else { return .unknown }
         let delaySeconds = estimated.timeIntervalSince(scheduledDeparture)
@@ -43,15 +43,15 @@ public struct TrainService: Identifiable, Sendable {
         return delayMinutes > 0 ? .delayed(minutes: delayMinutes) : .onTime
     }
 
-    public var delayInfo: DelayInfo {
+    var delayInfo: DelayInfo {
         DelayInfo(minutes: status.delayMinutes)
     }
 
-    public var scheduledArrival: Date? {
+    var scheduledArrival: Date? {
         callingPoints.last(where: { $0.station.crsCode == destination.crsCode })?.scheduledTime
     }
 
-    public var estimatedArrival: Date? {
+    var estimatedArrival: Date? {
         callingPoints.last(where: { $0.station.crsCode == destination.crsCode })?.estimatedTime
     }
 }

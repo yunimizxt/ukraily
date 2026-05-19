@@ -2,22 +2,22 @@ import Foundation
 import SwiftData
 
 @Model
-public final class TrackedJourney {
-    public var id: UUID
-    public var serviceID: String
-    public var originCRS: String
-    public var originName: String
-    public var destinationCRS: String
-    public var destinationName: String
-    public var scheduledDeparture: Date
-    public var isActive: Bool
-    public var lastStatusRaw: Int
-    public var lastKnownPlatform: String?
-    public var lastKnownDelayMinutes: Int
-    public var lastNotifiedDelayThreshold: Int
-    public var addedAt: Date
+final class TrackedJourney {
+    var id: UUID
+    var serviceID: String
+    var originCRS: String
+    var originName: String
+    var destinationCRS: String
+    var destinationName: String
+    var scheduledDeparture: Date
+    var isActive: Bool
+    var lastStatusRaw: Int
+    var lastKnownPlatform: String?
+    var lastKnownDelayMinutes: Int
+    var lastNotifiedDelayThreshold: Int
+    var addedAt: Date
 
-    public init(
+    init(
         id: UUID = UUID(),
         serviceID: String,
         originCRS: String,
@@ -49,28 +49,28 @@ public final class TrackedJourney {
 }
 
 extension TrackedJourney {
-    public var origin: Station {
+    var origin: Station {
         Station(crsCode: originCRS, name: originName)
     }
 
-    public var destination: Station {
+    var destination: Station {
         Station(crsCode: destinationCRS, name: destinationName)
     }
 }
 
 @Model
-public final class SavedStation {
-    public var crsCode: String
-    public var name: String
-    public var addedAt: Date
+final class SavedStation {
+    var crsCode: String
+    var name: String
+    var addedAt: Date
 
-    public init(crsCode: String, name: String, addedAt: Date = .now) {
+    init(crsCode: String, name: String, addedAt: Date = .now) {
         self.crsCode = crsCode
         self.name = name
         self.addedAt = addedAt
     }
 
-    public var station: Station {
+    var station: Station {
         Station(crsCode: crsCode, name: name)
     }
 }

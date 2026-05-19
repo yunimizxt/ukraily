@@ -1,7 +1,7 @@
 import Foundation
 
 extension TrackedJourneySnapshot {
-    public static func from(_ journey: TrackedJourney) -> TrackedJourneySnapshot {
+    static func from(_ journey: TrackedJourney) -> TrackedJourneySnapshot {
         TrackedJourneySnapshot(
             id: journey.id,
             serviceID: journey.serviceID,

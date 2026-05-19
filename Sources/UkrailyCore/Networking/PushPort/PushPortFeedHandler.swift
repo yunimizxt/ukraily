@@ -1,11 +1,11 @@
 import Foundation
 import Combine
 
-public struct TrainStatusUpdate: Sendable {
-    public let rid: String
-    public let delayMinutes: Int?
-    public let platform: String?
-    public let isCancelled: Bool
+struct TrainStatusUpdate: Sendable {
+    let rid: String
+    let delayMinutes: Int?
+    let platform: String?
+    let isCancelled: Bool
 }
 
 final class PushPortFeedHandler {

@@ -1,10 +1,10 @@
 import Foundation
 
-public struct StationRecord: Codable, Sendable {
-    public let crsCode: String
-    public let name: String
-    public let lat: Double
-    public let lon: Double
+struct StationRecord: Codable, Sendable {
+    let crsCode: String
+    let name: String
+    let lat: Double
+    let lon: Double
 
     enum CodingKeys: String, CodingKey {
         case crsCode = "crs"
@@ -14,17 +14,17 @@ public struct StationRecord: Codable, Sendable {
     }
 }
 
-public final class CRSCodeLookup: @unchecked Sendable {
+final class CRSCodeLookup: @unchecked Sendable {
 
-    public static let shared = CRSCodeLookup()
+    static let shared = CRSCodeLookup()
 
     private var records: [StationRecord] = []
 
-    public init() {
+    init() {
         load()
     }
 
-    public func search(_ query: String, limit: Int = 10) -> [Station] {
+    func search(_ query: String, limit: Int = 10) -> [Station] {
         guard !query.isEmpty else { return Array(records.prefix(limit).map(\.station)) }
         let q = query.lowercased()
         return records
@@ -34,7 +34,7 @@ public final class CRSCodeLookup: @unchecked Sendable {
             .map(\.station)
     }
 
-    public func station(forCRS crs: String) -> Station? {
+    func station(forCRS crs: String) -> Station? {
         records.first(where: { $0.crsCode.uppercased() == crs.uppercased() })?.station
     }
 

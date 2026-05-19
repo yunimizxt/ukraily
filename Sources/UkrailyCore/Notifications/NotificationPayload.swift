@@ -3,7 +3,7 @@ import UserNotifications
 
 // MARK: - Event types
 
-public enum NotificationEventType: String, Sendable {
+enum NotificationEventType: String, Sendable {
     case preDeparture30  = "preDeparture30"
     case preDeparture10  = "preDeparture10"
     case platformChange  = "platformChange"
@@ -15,19 +15,19 @@ public enum NotificationEventType: String, Sendable {
 
 // MARK: - Payload
 
-public struct NotificationPayload: Sendable {
+struct NotificationPayload: Sendable {
 
-    public let journeyID: UUID
-    public let serviceID: String
-    public let eventType: NotificationEventType
-    public let title: String
-    public let body: String
+    let journeyID: UUID
+    let serviceID: String
+    let eventType: NotificationEventType
+    let title: String
+    let body: String
 
-    public var requestIdentifier: String {
+    var requestIdentifier: String {
         "ukraily.journey.\(journeyID.uuidString).\(eventType.rawValue)"
     }
 
-    public func makeContent() -> UNMutableNotificationContent {
+    func makeContent() -> UNMutableNotificationContent {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
@@ -45,7 +45,7 @@ public struct NotificationPayload: Sendable {
 
 extension NotificationPayload {
 
-    public static func preDeparture(
+    static func preDeparture(
         journey: TrackedJourney,
         minutesBefore: Int
     ) -> NotificationPayload {
@@ -60,7 +60,7 @@ extension NotificationPayload {
         )
     }
 
-    public static func platformChange(
+    static func platformChange(
         journey: TrackedJourney,
         newPlatform: String,
         oldPlatform: String?
@@ -75,7 +75,7 @@ extension NotificationPayload {
         )
     }
 
-    public static func delay(
+    static func delay(
         journey: TrackedJourney,
         delayMinutes: Int
     ) -> NotificationPayload? {
@@ -95,7 +95,7 @@ extension NotificationPayload {
         )
     }
 
-    public static func cancellation(journey: TrackedJourney) -> NotificationPayload {
+    static func cancellation(journey: TrackedJourney) -> NotificationPayload {
         NotificationPayload(
             journeyID: journey.id,
             serviceID: journey.serviceID,
