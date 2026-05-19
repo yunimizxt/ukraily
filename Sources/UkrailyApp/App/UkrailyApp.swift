@@ -14,12 +14,18 @@ struct UkrailyApp: App {
                 .onOpenURL { url in
                     handleDeepLink(url)
                 }
+                .task {
+                    await AppNotificationDelegate.shared.requestAuthorisation()
+                    // Push Port credentials come from the same xcconfig as the SOAP key.
+                    // For now connect unauthenticated — the feed is open for registered users.
+                    PushPortWebSocketClient.shared.connect()
+                }
         }
         .modelContainer(PersistenceController.shared.container)
     }
 
     private func handleDeepLink(_ url: URL) {
-        // ukraily://journey/<id>
+        // ukraily://journey/<uuid>
         guard url.scheme == "ukraily",
               url.host == "journey",
               let idString = url.pathComponents.dropFirst().first,

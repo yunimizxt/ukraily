@@ -121,3 +121,53 @@ struct ServiceRowView: View {
         }
     }
 }
+
+// MARK: - Previews
+
+private struct DepartureBoardPreviewViewModel: View {
+    var body: some View {
+        let vm = DepartureBoardViewModel(crs: "PAD", stationName: "London Paddington")
+        let _ = {
+            vm.services = [MockData.onTimeService, MockData.delayedService, MockData.cancelledService]
+            vm.loadState = .loaded
+        }()
+        return DepartureBoardViewContent(viewModel: vm)
+    }
+}
+
+// Extracted testable sub-view so preview doesn't require a live network call
+private struct DepartureBoardViewContent: View {
+    @ObservedObject var viewModel: DepartureBoardViewModel
+    @StateObject private var coordinator = RootCoordinator()
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.ukrailyBackground.ignoresSafeArea()
+                ScrollView {
+                    LazyVStack(spacing: 10) {
+                        ForEach(viewModel.services) { service in
+                            ServiceRowView(service: service) {}
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                }
+            }
+            .navigationTitle(viewModel.stationName)
+        }
+        .environmentObject(coordinator)
+    }
+}
+
+#Preview("Departure board") {
+    DepartureBoardViewContent(
+        viewModel: {
+            let vm = DepartureBoardViewModel(crs: "PAD", stationName: "London Paddington")
+            vm.services = [MockData.onTimeService, MockData.delayedService, MockData.cancelledService]
+            vm.loadState = .loaded
+            return vm
+        }()
+    )
+    .modelContainer(for: [TrackedJourney.self, SavedStation.self], inMemory: true)
+}

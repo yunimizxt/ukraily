@@ -56,3 +56,12 @@ struct TrainCardProgressBar: View {
         }
     }
 }
+
+#Preview {
+    VStack(spacing: 24) {
+        TrainCardProgressBar(service: MockData.onTimeService)  // not yet departed
+        TrainCardProgressBar(service: MockData.departedService) // in progress
+    }
+    .padding()
+    .background(Color.ukrailyBackground)
+}

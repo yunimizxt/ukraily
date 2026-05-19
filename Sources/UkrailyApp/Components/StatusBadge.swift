@@ -33,3 +33,14 @@ struct StatusBadge: View {
             .clipShape(Capsule())
     }
 }
+
+#Preview {
+    HStack(spacing: 12) {
+        StatusBadge(status: .onTime)
+        StatusBadge(status: .delayed(minutes: 7))
+        StatusBadge(status: .cancelled)
+        StatusBadge(status: .unknown)
+    }
+    .padding()
+    .background(Color.ukrailyBackground)
+}

@@ -26,3 +26,14 @@ struct DelayBadgeView: View {
         }
     }
 }
+
+#Preview {
+    HStack(spacing: 12) {
+        DelayBadgeView(status: .onTime)
+        DelayBadgeView(status: .delayed(minutes: 5))
+        DelayBadgeView(status: .delayed(minutes: 23))
+        DelayBadgeView(status: .cancelled)
+    }
+    .padding()
+    .background(Color.ukrailyBackground)
+}

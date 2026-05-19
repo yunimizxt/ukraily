@@ -52,3 +52,17 @@ struct CallingPointRow: View {
         return .white.opacity(0.6)
     }
 }
+
+#Preview {
+    let points = MockData.onTimeService.callingPoints
+    return VStack(spacing: 0) {
+        ForEach(Array(points.enumerated()), id: \.element.id) { index, cp in
+            CallingPointRow(callingPoint: cp, isFirst: index == 0, isLast: index == points.count - 1)
+                .padding(.horizontal)
+        }
+    }
+    .background(Color.ukrailyCard)
+    .clipShape(RoundedRectangle(cornerRadius: 16))
+    .padding()
+    .background(Color.ukrailyBackground)
+}

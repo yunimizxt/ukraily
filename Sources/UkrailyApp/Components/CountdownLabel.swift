@@ -29,3 +29,19 @@ struct CountdownLabel: View {
         minutesRemaining = max(0, Int(targetDate.timeIntervalSinceNow / 60))
     }
 }
+
+#Preview {
+    VStack(spacing: 12) {
+        CountdownLabel(targetDate: Date.now.addingTimeInterval(8 * 60))
+            .font(.title.monospacedDigit().bold())
+            .foregroundStyle(.blue)
+        CountdownLabel(targetDate: Date.now.addingTimeInterval(90 * 60))
+            .font(.title.monospacedDigit().bold())
+            .foregroundStyle(.blue)
+        CountdownLabel(targetDate: Date.now.addingTimeInterval(-5 * 60))
+            .font(.title.monospacedDigit().bold())
+            .foregroundStyle(.blue)
+    }
+    .padding()
+    .background(Color.ukrailyBackground)
+}

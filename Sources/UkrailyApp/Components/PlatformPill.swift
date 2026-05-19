@@ -21,3 +21,12 @@ struct PlatformPill: View {
         .overlay(Capsule().strokeBorder(changed ? Color.orange.opacity(0.5) : Color.white.opacity(0.15), lineWidth: 1))
     }
 }
+
+#Preview {
+    HStack(spacing: 12) {
+        PlatformPill(platform: "3")
+        PlatformPill(platform: "7", changed: true)
+    }
+    .padding()
+    .background(Color.ukrailyBackground)
+}
