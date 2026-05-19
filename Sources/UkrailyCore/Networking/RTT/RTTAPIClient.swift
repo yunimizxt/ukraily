@@ -31,6 +31,8 @@ final class RTTAPIClient {
         self.username = Bundle.main.object(forInfoDictionaryKey: "RTTUsername") as? String ?? ""
         self.password = Bundle.main.object(forInfoDictionaryKey: "RTTPassword") as? String ?? ""
         self.session = session
+        print("[RTT] Username from bundle: '\(self.username)'")
+        print("[RTT] Password from bundle: '\(self.password.isEmpty ? "EMPTY" : "SET")'")
     }
 
     init(username: String, password: String, session: URLSession = .shared) {
