@@ -1,7 +1,6 @@
 import UIKit
 import UserNotifications
 import SwiftData
-import UkrailyCore
 
 final class AppNotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
 

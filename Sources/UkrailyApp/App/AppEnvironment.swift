@@ -1,5 +1,4 @@
 import Foundation
-import UkrailyCore
 
 @MainActor
 final class AppEnvironment: ObservableObject {

@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import UkrailyCore
 
 @main
 struct UkrailyApp: App {

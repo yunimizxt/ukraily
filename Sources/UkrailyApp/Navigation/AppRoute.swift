@@ -1,5 +1,4 @@
 import Foundation
-import UkrailyCore
 
 enum AppRoute: Hashable {
     case departureBoard(crs: String, name: String)

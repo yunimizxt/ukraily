@@ -2,7 +2,6 @@ import Foundation
 import BackgroundTasks
 import SwiftData
 import WidgetKit
-import UkrailyCore
 
 final class BackgroundRefreshManager {
 

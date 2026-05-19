@@ -2,7 +2,6 @@ import Foundation
 import Combine
 import SwiftData
 import WidgetKit
-import UkrailyCore
 
 @MainActor
 final class TrainCardViewModel: ObservableObject {

@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import UkrailyCore
 
 @MainActor
 final class HomeViewModel: ObservableObject {

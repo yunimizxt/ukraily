@@ -1,5 +1,4 @@
 import SwiftUI
-import UkrailyCore
 
 struct DelayBadgeView: View {
 

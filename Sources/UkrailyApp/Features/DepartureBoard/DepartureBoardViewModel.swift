@@ -1,5 +1,4 @@
 import Foundation
-import UkrailyCore
 
 enum LoadState {
     case idle

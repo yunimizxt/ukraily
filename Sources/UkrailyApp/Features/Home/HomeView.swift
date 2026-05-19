@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import UkrailyCore
 
 struct HomeView: View {
 
