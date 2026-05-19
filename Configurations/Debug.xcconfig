@@ -1,5 +1,5 @@
 // Debug build configuration
-// DarwinAPIKey.xcconfig is gitignored — add RTT_USERNAME and RTT_PASSWORD there
+// DarwinAPIKey.xcconfig is gitignored — add RTT_API_TOKEN there
 #include? "DarwinAPIKey.xcconfig"
 
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG

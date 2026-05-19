@@ -1,6 +1,5 @@
 // Copy this file to DarwinAPIKey.xcconfig (gitignored) and fill in your credentials.
 // Darwin token: https://realtime.nationalrail.co.uk/OpenLDBWSRegistration/
-// RTT account: https://www.realtimetrains.co.uk/about/developer/pull/docs/
+// RTT token: https://www.realtimetrains.co.uk/about/developer/pull/docs/
 DARWIN_API_KEY = YOUR_KEY_HERE
-RTT_USERNAME = your_rtt_username
-RTT_PASSWORD = your_rtt_password
+RTT_API_TOKEN = your_rtt_token_here

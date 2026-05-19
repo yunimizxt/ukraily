@@ -8,7 +8,7 @@ enum RTTError: Error, LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .missingCredentials:         return "RTT credentials not configured."
+        case .missingCredentials:         return "RTT API token not configured."
         case .invalidResponse(let code):  return "RTT returned HTTP \(code)."
         case .parseFailure(let e):        return "Parse error: \(e.localizedDescription)"
         case .networkFailure(let e):      return "Network error: \(e.localizedDescription)"
@@ -20,24 +20,20 @@ final class RTTAPIClient {
 
     static let shared = RTTAPIClient()
 
-    private static let baseURL = URL(string: "https://api.rtt.io/api/v1/json")!
+    private static let baseURL = URL(string: "https://data.rtt.io/api/v1/json")!
     private static let timeout: TimeInterval = 10
 
     private let session: URLSession
-    private let username: String
-    private let password: String
+    private let apiToken: String
 
     init(session: URLSession = .shared) {
-        self.username = Bundle.main.object(forInfoDictionaryKey: "RTTUsername") as? String ?? ""
-        self.password = Bundle.main.object(forInfoDictionaryKey: "RTTPassword") as? String ?? ""
+        self.apiToken = Bundle.main.object(forInfoDictionaryKey: "RTTAPIToken") as? String ?? ""
         self.session = session
-        print("[RTT] Username from bundle: '\(self.username)'")
-        print("[RTT] Password from bundle: '\(self.password.isEmpty ? "EMPTY" : "SET")'")
+        print("[RTT] API token from bundle: '\(self.apiToken.isEmpty ? "EMPTY" : "SET (length \(self.apiToken.count))")'")
     }
 
-    init(username: String, password: String, session: URLSession = .shared) {
-        self.username = username
-        self.password = password
+    init(apiToken: String, session: URLSession = .shared) {
+        self.apiToken = apiToken
         self.session = session
     }
 
@@ -54,14 +50,13 @@ final class RTTAPIClient {
     // MARK: - Private
 
     private func get<T: Decodable>(path: String) async throws -> T {
-        guard !username.isEmpty, !password.isEmpty else {
+        guard !apiToken.isEmpty else {
             throw RTTError.missingCredentials
         }
 
         let url = Self.baseURL.appendingPathComponent(path)
         var request = URLRequest(url: url, timeoutInterval: Self.timeout)
-        let cred = "\(username):\(password)".data(using: .utf8)!.base64EncodedString()
-        request.setValue("Basic \(cred)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
         do {

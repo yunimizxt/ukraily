@@ -40,8 +40,7 @@ targets:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         DarwinAPIKey: $(DARWIN_API_KEY)
-        RTTUsername: $(RTT_USERNAME)
-        RTTPassword: $(RTT_PASSWORD)
+        RTTAPIToken: $(RTT_API_TOKEN)
         BGTaskSchedulerPermittedIdentifiers:
           - com.ukraily.refresh
         NSUserNotificationsUsageDescription: "Ukraily notifies you about delays, platform changes, and departure reminders."
