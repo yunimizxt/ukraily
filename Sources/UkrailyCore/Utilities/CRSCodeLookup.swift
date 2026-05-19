@@ -41,7 +41,7 @@ final class CRSCodeLookup: @unchecked Sendable {
     // MARK: - Private
 
     private func load() {
-        guard let url = Bundle.module.url(forResource: "Stations", withExtension: "json"),
+        guard let url = Bundle.main.url(forResource: "Stations", withExtension: "json"),
               let data = try? Data(contentsOf: url) else { return }
         records = (try? JSONDecoder().decode([StationRecord].self, from: data)) ?? []
     }

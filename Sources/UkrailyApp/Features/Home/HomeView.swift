@@ -74,7 +74,7 @@ struct HomeView: View {
                 } label: {
                     Image(systemName: activeJourneys.isEmpty ? "tram" : "tram.fill")
                         .font(.title3)
-                        .foregroundStyle(activeJourneys.isEmpty ? .secondary : .ukrailyAccent)
+                        .foregroundStyle(activeJourneys.isEmpty ? Color.secondary : Color.ukrailyAccent)
                         .overlay(alignment: .topTrailing) {
                             if !activeJourneys.isEmpty {
                                 Text("\(activeJourneys.count)")

@@ -156,7 +156,7 @@ struct TrainCardView: View {
                 if !service.isCancelled {
                     CountdownLabel(targetDate: service.estimatedDeparture ?? service.scheduledDeparture)
                         .font(.title3.monospacedDigit())
-                        .foregroundStyle(.ukrailyAccent)
+                        .foregroundStyle(Color.ukrailyAccent)
                 }
                 DelayBadgeView(status: service.status)
                 Spacer()

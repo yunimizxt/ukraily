@@ -27,7 +27,7 @@ struct CallingPointRow: View {
             HStack {
                 Text(callingPoint.station.name)
                     .font(.subheadline)
-                    .foregroundStyle(callingPoint.isCancelled ? .secondary : .white)
+                    .foregroundStyle(callingPoint.isCancelled ? Color.white.opacity(0.4) : Color.white)
                     .strikethrough(callingPoint.isCancelled)
                 Spacer()
                 VStack(alignment: .trailing, spacing: 1) {

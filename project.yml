@@ -33,6 +33,7 @@ targets:
       - path: Sources/UkrailyCore
     resources:
       - Sources/UkrailyApp/Resources
+      - Sources/UkrailyCore/Utilities/Stations.json
     info:
       path: Sources/UkrailyApp/Resources/Info.plist
       properties:
