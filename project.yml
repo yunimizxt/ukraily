@@ -4,8 +4,7 @@ options:
   deploymentTarget:
     iOS: "17.0"
     watchOS: "10.0"
-  xcodeVersion: "15.0"
-  generateEmptyDirectories: true
+generateEmptyDirectories: true
 
 settings:
   base:
