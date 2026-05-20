@@ -55,6 +55,7 @@ final class RTTAPIClient {
         }
 
         let url = Self.baseURL.appendingPathComponent(path)
+        print("[RTT] Requesting: \(url.absoluteString)")
         var request = URLRequest(url: url, timeoutInterval: Self.timeout)
         request.setValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
@@ -65,6 +66,8 @@ final class RTTAPIClient {
                 throw RTTError.invalidResponse(-1)
             }
             guard (200..<300).contains(http.statusCode) else {
+                let body = String(data: data, encoding: .utf8) ?? ""
+                print("[RTT] HTTP \(http.statusCode): \(body.prefix(200))")
                 throw RTTError.invalidResponse(http.statusCode)
             }
             let decoder = JSONDecoder()
