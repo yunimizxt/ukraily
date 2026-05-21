@@ -62,15 +62,13 @@ final class RTTAPIClient {
     }
 
     func fetchDepartures(crs: String) async throws -> RTTLocationResponse {
-        try await get(path: "rtt/location", params: ["code": crs.uppercased()])
+        try await get(path: "rtt/location", params: ["code": "gb-nr:\(crs.uppercased())"])
     }
 
     func fetchServiceDetails(serviceUid: String, runDate: String) async throws -> RTTServiceResponse {
-        // runDate is "yyyy-MM-dd"
+        // runDate is "yyyy-MM-dd"; uniqueIdentity format: gb-nr:uid:date
         try await get(path: "rtt/service", params: [
-            "namespace": "gb-nr",
-            "identity": serviceUid,
-            "departureDate": runDate
+            "uniqueIdentity": "gb-nr:\(serviceUid):\(runDate)"
         ])
     }
 
