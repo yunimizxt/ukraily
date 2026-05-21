@@ -50,6 +50,17 @@ final class RTTAPIClient {
 
     // MARK: - Public API
 
+    func debugFetchStops() async {
+        guard let token = try? await validAccessToken() else { return }
+        var components = URLComponents(url: Self.baseURL.appendingPathComponent("data/stops"), resolvingAgainstBaseURL: false)!
+        var request = URLRequest(url: components.url!, timeoutInterval: Self.timeout)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        guard let (data, _) = try? await session.data(for: request) else { return }
+        let body = String(data: data, encoding: .utf8) ?? ""
+        print("[RTT] Stops preview: \(body.prefix(1000))")
+    }
+
     func fetchDepartures(crs: String) async throws -> RTTLocationResponse {
         try await get(path: "rtt/location", params: ["code": crs.uppercased()])
     }

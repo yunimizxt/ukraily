@@ -22,6 +22,7 @@ struct UkrailyApp: App {
                     await AppNotificationDelegate.shared.requestAuthorisation()
                     PushPortWebSocketClient.shared.connect()
                     BackgroundRefreshManager.shared.scheduleNext()
+                    await RTTAPIClient.shared.debugFetchStops()
                 }
         }
         .modelContainer(PersistenceController.shared.container)
