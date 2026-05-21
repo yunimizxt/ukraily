@@ -51,11 +51,16 @@ final class RTTAPIClient {
     // MARK: - Public API
 
     func fetchDepartures(crs: String) async throws -> RTTLocationResponse {
-        try await get(path: "api/v1/json/search/\(crs.uppercased())")
+        try await get(path: "rtt/location", params: ["code": crs.uppercased()])
     }
 
     func fetchServiceDetails(serviceUid: String, runDate: String) async throws -> RTTServiceResponse {
-        try await get(path: "api/v1/json/service/\(serviceUid)/\(runDate)")
+        // runDate is "yyyy-MM-dd"
+        try await get(path: "rtt/service", params: [
+            "namespace": "gb-nr",
+            "identity": serviceUid,
+            "departureDate": runDate
+        ])
     }
 
     // MARK: - Token exchange
@@ -67,13 +72,14 @@ final class RTTAPIClient {
 
         guard !refreshToken.isEmpty else { throw RTTError.missingCredentials }
 
-        let url = Self.baseURL.appendingPathComponent("api/get_access_token")
+        var components = URLComponents(url: Self.baseURL.appendingPathComponent("api/get_access_token"), resolvingAgainstBaseURL: false)!
+        let url = components.url!
         var request = URLRequest(url: url, timeoutInterval: Self.timeout)
-        request.httpMethod = "POST"
+        request.httpMethod = "GET"
         request.setValue("Bearer \(refreshToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
-        print("[RTT] Exchanging refresh token for access token...")
+        print("[RTT] Exchanging refresh token for access token at \(url)")
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse else { throw RTTError.invalidResponse(-1) }
         guard (200..<300).contains(http.statusCode) else {
@@ -82,14 +88,15 @@ final class RTTAPIClient {
             throw RTTError.invalidResponse(http.statusCode)
         }
 
+        let body = String(data: data, encoding: .utf8) ?? ""
+        print("[RTT] Token exchange response: \(body.prefix(300))")
+
         let decoded = try JSONDecoder().decode(RTTAccessTokenResponse.self, from: data)
         guard let token = decoded.resolvedToken else {
-            print("[RTT] Token exchange response: \(String(data: data, encoding: .utf8) ?? "")")
             throw RTTError.parseFailure(NSError(domain: "RTT", code: 0, userInfo: [NSLocalizedDescriptionKey: "No token in response"]))
         }
 
         accessToken = token
-        // Parse validUntil if present, else assume 1 hour
         if let validUntilStr = decoded.validUntil,
            let expiry = ISO8601DateFormatter().date(from: validUntilStr) {
             accessTokenExpiry = expiry
@@ -103,9 +110,15 @@ final class RTTAPIClient {
 
     // MARK: - Private
 
-    private func get<T: Decodable>(path: String) async throws -> T {
+    private func get<T: Decodable>(path: String, params: [String: String] = [:]) async throws -> T {
         let token = try await validAccessToken()
-        let url = Self.baseURL.appendingPathComponent(path)
+
+        var components = URLComponents(url: Self.baseURL.appendingPathComponent(path), resolvingAgainstBaseURL: false)!
+        if !params.isEmpty {
+            components.queryItems = params.map { URLQueryItem(name: $0.key, value: $0.value) }
+        }
+        guard let url = components.url else { throw RTTError.invalidResponse(-1) }
+
         print("[RTT] Requesting: \(url.absoluteString)")
         var request = URLRequest(url: url, timeoutInterval: Self.timeout)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -118,13 +131,16 @@ final class RTTAPIClient {
             }
             guard (200..<300).contains(http.statusCode) else {
                 let body = String(data: data, encoding: .utf8) ?? ""
-                print("[RTT] HTTP \(http.statusCode): \(body.prefix(200))")
+                print("[RTT] HTTP \(http.statusCode): \(body.prefix(300))")
                 throw RTTError.invalidResponse(http.statusCode)
             }
+            let body = String(data: data, encoding: .utf8) ?? ""
+            print("[RTT] Response preview: \(body.prefix(500))")
             return try JSONDecoder().decode(T.self, from: data)
         } catch let e as RTTError {
             throw e
         } catch let e as DecodingError {
+            print("[RTT] Decode error: \(e)")
             throw RTTError.parseFailure(e)
         } catch {
             throw RTTError.networkFailure(error)
